@@ -1,0 +1,121 @@
+﻿@page
+@model A4_Print.A4Model
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html ng-app="ui.bootstrap.demo">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/css/A4.css" type="text/css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    @*  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>*@
+
+    <title>A4</title>
+    <script>
+        angular.module('ui.bootstrap.demo', ['ngAnimate', 'ngSanitize', 'ui.bootstrap']);
+
+
+
+        angular.module('ui.bootstrap.demo').controller('PagerDemoCtrl', function ($scope, $http) {
+            
+            $scope.currentPage = 1;
+
+            $scope.date = new Date();
+            $scope.id = "";
+            $scope.name = "";
+            $scope.family = "";
+            Init(1);
+
+             function Init(StudentId) {
+
+                $http({
+                    method: 'GET',
+                    url: 'https://localhost:44325/api/A4?StudentId='+StudentId+'&currentPage='+ $scope.currentPage
+                }).then(function (response) {
+                    data = response.data;
+                    if (data.length > 0) {
+                        console.log(response);
+                        $scope.Students = data;
+                       
+                        $scope.totalItems = $scope.Students[0].pages;
+                        
+                    }
+                }, function (error) {
+                    $scope.error = "An Error has occured while loading posts!";
+
+                });
+            }
+
+            function selectStudentDetails(StudentId) {
+              
+                $http({
+                    method: 'GET',
+                    url: 'https://localhost:44325/api/A4?StudentId='+StudentId+'&currentPage='+ $scope.currentPage
+                }).then(function (response) {
+                    data = response.data;
+                    if (data.length > 0) {
+                        console.log(response);
+                        $scope.Students = data;
+                       
+                    }
+                }, function (error) {
+                    $scope.error = "An Error has occured while loading posts!";
+
+                });
+            }
+
+            $scope.ListPageChanged = function () {
+                selectStudentDetails(1);
+            }
+
+        });
+
+
+
+
+
+
+
+
+    </script>
+</head>
+<body>
+    <div ng-controller="PagerDemoCtrl">
+        <center> <pre>You are currently on page {{currentPage}} of {{totalItems/10}}</pre></center>
+        <ul uib-pager total-items="totalItems" ng-change="ListPageChanged()" ng-model="currentPage"></ul>
+       
+
+        <page size="A4">
+          
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <td scope="col">Id</td>
+                        <td scope="col">Email</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in Students">
+
+                        <th scope="row">1</th>
+                        <td>{{x.id}}</td>
+                        <td>{{x.email}}</td>
+                    </tr>
+                </tbody>
+            </table>
+           
+        </page>
+    </div>
+
+    
+    @* <page size="A4" layout="portrait">A4 portrait</page>*@
+</body>
+</html>
